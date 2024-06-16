@@ -1,5 +1,6 @@
 import streamlit as st
 from langchain_community.llms import ollama
+import Ollama
 #import os
 
 # App title
