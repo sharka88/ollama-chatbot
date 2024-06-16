@@ -45,8 +45,8 @@ st.sidebar.button('Clear Chat History', on_click=clear_chat_history)
 
 # Function for generating LLaMA2 response
 def gen_ollama_response(prompt_input):
-    response = ollama.chat(model=st.session_state.selected_model, messages=[{'role': 'user', 'content': prompt_input}])
-    #st.write("Debug: Response from ollama.chat:", response)  # Debug print
+    response = Ollama.chat(model=st.session_state.selected_model, messages=[{'role': 'user', 'content': prompt_input}])
+    #st.write("Debug: Response from Ollama.chat:", response)  # Debug print
     if 'message' in response and 'content' in response['message']:
         return response['message']['content']
     else:
@@ -61,7 +61,7 @@ if prompt := st.chat_input():
 # Generate a new response if last message is not from assistant
 if st.session_state.messages[-1]["role"] != "assistant":
     with st.chat_message("assistant"):
-        with st.spinner("Thinking..."):
+        with st.spinner("Processing..."):
             response = gen_ollama_response(st.session_state.messages[-1]["content"])
             st.write(response)
     st.session_state.messages.append({"role": "assistant", "content": response})
