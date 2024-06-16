@@ -11,7 +11,7 @@ with st.sidebar:
 
     # Model selection and parameters
     st.subheader('Models and parameters')
-    model_list = ollama.list()['models']
+    model_list = Ollama.list()['models']
     model_names = [model['model'] for model in model_list]
 
     # If session_state does not have selected_model, set default model
