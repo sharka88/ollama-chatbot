@@ -1,18 +1,16 @@
 import streamlit as st
-#from langchain_community.llms import ollama
-import Ollama
-#import os
+import ollama
 
 # App title
-st.set_page_config(page_title="🦙 Ollama Chatbot 💬 ")
+st.set_page_config(page_title="🦙 Ollama Chatbot 💬")
 
-# Sidebar for Replicate Credentials
+# Sidebar for model selection and parameters
 with st.sidebar:
     st.title('🦙 Ollama Chatbot 💬')
 
     # Model selection and parameters
     st.subheader('Models and parameters')
-    model_list = Ollama.list()['models']
+    model_list = ollama.list()['models']
     model_names = [model['model'] for model in model_list]
 
     # If session_state does not have selected_model, set default model
@@ -46,8 +44,10 @@ st.sidebar.button('Clear Chat History', on_click=clear_chat_history)
 
 # Function for generating LLaMA2 response
 def gen_ollama_response(prompt_input):
-    response = Ollama.chat(model=st.session_state.selected_model, messages=[{'role': 'user', 'content': prompt_input}])
-    #st.write("Debug: Response from Ollama.chat:", response)  # Debug print
+    response = ollama.chat(
+        model=st.session_state.selected_model,
+        messages=[{'role': 'user', 'content': prompt_input}],
+    )
     if 'message' in response and 'content' in response['message']:
         return response['message']['content']
     else:
@@ -56,13 +56,12 @@ def gen_ollama_response(prompt_input):
 # User-provided prompt
 if prompt := st.chat_input():
     st.session_state.messages.append({"role": "user", "content": prompt})
-    with st.chat_message("user"):
-        st.write(prompt)
+    st.chat_message("user").write(prompt)
 
-# Generate a new response if last message is not from assistant
-if st.session_state.messages[-1]["role"] != "assistant":
-    with st.chat_message("assistant"):
-        with st.spinner("Processing..."):
-            response = gen_ollama_response(st.session_state.messages[-1]["content"])
+    # Generate a new response if the last message is not from the assistant
+    if st.session_state.messages[-1]["role"] != "assistant":
+        with st.chat_message("assistant"):
+            with st.spinner("Thinking..."):
+                response = gen_ollama_response(prompt)
             st.write(response)
     st.session_state.messages.append({"role": "assistant", "content": response})
